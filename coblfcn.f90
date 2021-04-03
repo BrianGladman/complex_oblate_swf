@@ -29,7 +29,7 @@ program coblfcn
 !               To calculate the first kind oblate angular functions
 !               s1 and their first derivatives with respect to the
 !               angle coordinate eta for a range of values of m, l,
-!               and eta for a specified complex c.
+!               and eta and for a given value of c.
 !
 !  Coblfcn provides function values for c complex = real(c) + i aimag(c)
 !  = cr + i ci, where the imaginary part ci often accounts for losses in
@@ -69,11 +69,13 @@ program coblfcn
 !  the results, including the function values, eigenvalues, expansion coefficients,
 !  and normalization factors.
 !
-!      Input options
+!      Input data
 !
 !  Input parameters are read from unit 1 in the file coblfcn.dat
 !  assumed to be located in the directory of the fortran file.
-!  coblfcn.dat contains the following lines of data.
+!  coblfcn.dat contains the following lines of data. (Note that a
+!  subroutine version of coblfcn is available where the input parameters
+!  and output function values are passed through the call statement).
 !
 !       line 1:
 !          mmin   : minimum value for m. (integer)
@@ -368,7 +370,7 @@ end if
                    maxj,maxlp,maxm,maxmp,maxn,maxp,maxpdr,maxq,maxt, &
                    neta,jnenmax,jnebmax,xneu,ndec,nex,kindd,kindq)
 !
-        end
+        end program
 !
 !
         subroutine main (mmin,minc,mnum,lnum,cc,ioprad,iopang,iopnorm, &
@@ -621,6 +623,7 @@ end if
         real(knd) barg(maxt),etainp(maxt),pdnorm(maxt),pdnorma(maxt), &
                   pnorm(maxt),pnorma(maxt),pdtempe(maxt),pdtempo(maxt), &
                   ptempe(maxt),ptempo(maxt),xin(maxt),xlninp(maxt)
+        real(knd) arg(maxt)          
         integer ipdnorm(maxt),ipdnorma(maxt),ipnorm(maxt), &
                 ipnorma(maxt),ipdtempe(maxt),ipdtempo(maxt), &
                 iptempe(maxt),iptempo(maxt),is1e(maxt),is1de(maxt), &
@@ -641,8 +644,6 @@ end if
 !
 !  real(knd) arrays with dimension neta
         real(knd) eta(neta),xbn(neta),xln(neta),wmeta2(neta)
-        
-        real(knd) arg(narg)
 !
 !  miscellaneous integer arrays
         integer neeb(jnenmax),neeb1(jnebmax),limpsv(jnenmax), &
@@ -1173,7 +1174,7 @@ end if
                 max1o=min(limd,max1o)
                 end if
 !
-!  compute the coeficients in the bouwkamp method
+!  compute the coeficients in the Bouwkamp method
               if(ix.eq.1) go to 310
 !
 !  beta coefficients (bliste) for l-m even
@@ -3035,8 +3036,8 @@ if (debug) then
                   write(40,1395) naccrp,l-1
 end if
                   end if
-                  if(iopmatchp.eq.0.and.naccrps.ge.naccrp) &
-                       naccrp=naccrps
+                if(iopmatchp.eq.0.and.naccrps.ge.naccrp) &
+                     naccrp=naccrps
                   if(jjflagl.eq.1.or.naccrp.eq.min(naccrplp,naccr1p)) &
                       then
 if (output) then
@@ -3061,8 +3062,8 @@ if (debug) then
                   write(40,1395) naccr,l
 end if
                   end if
-                  jjflagl=0
-                  if(iopmatch.eq.0.and.naccr.eq.naccleg.and. &
+                jjflagl=0
+                if(iopmatch.eq.0.and.naccr.eq.naccleg.and. &
                     naccint.ne.naccr.and.jflagl.eq.1) jjflagl=1
                   if(jjflagl.eq.1.or.naccr.eq.min(naccrpl,naccr1)) &
                       then
@@ -3081,7 +3082,7 @@ end if
                 naccrsav=naccr
                 go to 1400
                 end if
-if (output) then
+if (debug) then
 1360          format(8x,'Values for r2 and r2d for ','l = ',i5, &
                      ' are given by r1 and r1d for l = ',i5)
 1370          format(8x,'Values for r2 and r2d for ','l = ',i5, &
@@ -3097,7 +3098,7 @@ end if
                 else
 if (output) then
                 write(20,1380) l,r1c(li),ir1e(li),r1dc(li),ir1de(li), &
-                         r2c(li),ir2e(li),r2dc(li),ir2de(li),naccr,chr_w
+                         r2c(li),ir2e(li),r2dc(li),ir2de(li),naccr, chr_w
 1380            format(1x,i5,2x,2(f17.14,1x,f17.14,i6,2x),/,8x, &
                           2(f17.14,1x,f17.14,i6,2x),i2,a)
 end if
@@ -3149,7 +3150,7 @@ if (debug) then
 end if
 if (output) then
                   write(20,1350) l,r1c(li),ir1e(li),r1dc(li),ir1de(li), &
-                                 r2c(li),ir2e(li),r2dc(li),ir2de(li), naccr, chr_e
+                                 r2c(li),ir2e(li),r2dc(li),ir2de(li),naccr, chr_e
 end if
                   else
                   r2c(li)=-r1c(li-1)
@@ -3212,7 +3213,7 @@ if (warn) then
                 write(60,*) ' est. acc. = ',naccr,' digits for m = ',m, &
                  ' l = ', l,' x = ',x,' c = ',cc
                 end if
-    end if
+end if
 if (warn) then
               if(ioprad.eq.1.and.naccr1.lt.6) write(60,*) &
                  'est. r1 acc. = ',naccr1,' digits for m = ',m,' l = ', &
@@ -3244,35 +3245,31 @@ end if
                 do 1500 jarg=1,narg
 if (debug) then
                 if(ioparg.eq.0.and.iopang.eq.1) write(50,1420) arg(jarg),naccs(jarg)
-                if(ioparg.eq.1.and.iopang.eq.1) write(50,1425) barg(jarg),naccs(jarg)
-                if(ioparg.eq.0.and.iopang.eq.2) write(50,1430) arg(jarg),naccs(jarg),naccds(jarg)
+                if(ioparg.eq.0.and.iopang.eq.2) write(50,1425) arg(jarg),naccs(jarg),naccds(jarg)
+                if(ioparg.eq.1.and.iopang.eq.1) write(50,1430) barg(jarg),naccs(jarg)                      
                 if(ioparg.eq.1.and.iopang.eq.2) write(50,1435) barg(jarg),naccs(jarg),naccds(jarg)
 1420            format(1x,'theta = ',e24.15,'   accuracy = ',i2, ' digits.')
-1425            format(1x,'eta = ',e24.15,'   accuracy = ',i2, ' digits.')
-1430            format(1x,'theta = ',e24.15,'   s1 and s1d accuracy = ', i2,' and ',i2,' digits.')
-1435            format(1x,'eta = ',e24.15,'   s1 and s1d accuracy = ', i2,' and ',i2,' digits.')
+1425            format(1x,'theta = ',e24.15,'   s1 and s1d accuracy = ',i2,' and ',i2,' digits.')
+1430            format(1x,'eta = ',e24.15,'   accuracy = ',i2, ' digits.')
+1435            format(1x,'eta = ',e24.15,'   s1 and s1d accuracy = ',i2,' and ',i2,' digits.')
 end if
 if (output) then
                 if(ioparg.eq.0.and.iopang.eq.1) write(30,1440) arg(jarg),s1c(jarg),is1e(jarg),naccs(jarg)
-                if(ioparg.eq.0.and.iopang.eq.2) write(30,1450) arg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg), &
-                      is1de(jarg),naccs(jarg),naccds(jarg)
-                if(ioparg.eq.1.and.iopang.eq.1) write(30,1460) barg(jarg),s1c(jarg),is1e(jarg),naccs(jarg)
-                if(ioparg.eq.1.and.iopang.eq.2) write(30,1470) barg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg), &
-                      is1de(jarg),naccs(jarg),naccds(jarg)
-1440            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,' ,', i2)
-1450            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,/,20x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
-1460            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,', ',i2)
-1470            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
+                if(ioparg.eq.0.and.iopang.eq.2) write(30,1450) arg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg),naccs(jarg),naccds(jarg)
+                if(ioparg.eq.1.and.iopang.eq.1) write(30,1440) barg(jarg),s1c(jarg),is1e(jarg),naccs(jarg)
+                if(ioparg.eq.1.and.iopang.eq.2) write(30,1450) barg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg),naccs(jarg),naccds(jarg)
+1440            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,i2)
+1450            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
 end if
 if (debug) then
-                if(knd.eq.kindd.and.iopang.eq.1) write(50,1480) s1c(jarg),is1e(jarg)
-                if(knd.eq.kindd.and.iopang.eq.2) write(50,1485) s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg)
-                if(knd.eq.kindq.and.iopang.eq.1) write(50,1490) s1c(jarg),is1e(jarg)
-                if(knd.eq.kindq.and.iopang.eq.2) write(50,1495) s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg)
-1480            format(12x,'s1 = ',f17.14,f17.14,2x,i5)
-1485            format(12x,'s1 = ',f17.14,1x,f17.14,2x,i5,5x,'s1d = ', f17.14,1x,f17.14,2x,i5)
-1490            format(12x,'s1 = ',f35.31,f35.31,2x,i5)
-1495            format(12x,'s1 = ',f35.31,1x,f35.31,2x,i5,/12x,'s1d = ',f35.31,1x,f35.31,2x,i5)
+                if(knd.eq.kindd.and.iopang.eq.1) write(50,1460) s1c(jarg),is1e(jarg)
+                if(knd.eq.kindd.and.iopang.eq.2) write(50,1470) s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg)
+                if(knd.eq.kindq.and.iopang.eq.1) write(50,1480) s1c(jarg),is1e(jarg)
+                if(knd.eq.kindq.and.iopang.eq.2) write(50,1490) s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg)
+1460            format(12x,'s1 = ',f17.14,f17.14,2x,i5)
+1470            format(12x,'s1 = ',f17.14,1x,f17.14,2x,i5,5x,'s1d = ',f17.14,1x,f17.14,2x,i5)
+1480            format(12x,'s1 = ',f35.31,f35.31,2x,i5)
+1490            format(12x,'s1 = ',f35.31,1x,f35.31,2x,i5,/12x,'s1d = ',f35.31,1x,f35.31,2x,i5)
 end if
 1500            continue
 1510          continue
@@ -3620,8 +3617,9 @@ end if
             iacc=int(log10(abs((fterm)/(s1))))
             if(iacc.lt.0) iacc=0
             if(iacc.gt.ndec) iacc=ndec
-            naccs(k)=min(ndec-2-iacc,naccre-1,itestm-1, &
-                     ndec-1-jsubms)
+            naccs(k)=min(ndec-2,naccre-1,itestm-1, &
+                     ndec-1-jsubms)-iacc
+            if(naccs(k).lt.0) naccs(k)=0
             end if
           if(naccs(k).gt.0) go to 300
           naccs(k)=0
@@ -3686,10 +3684,10 @@ end if
             iacc=int(log10(abs((fterm)/(s1d))))
             if(iacc.lt.0) iacc=0
             if(iacc.gt.ndec) iacc=ndec
-            naccds(k)=min(ndec-2-iacc,naccre-1,itestm-1, &
-                      ndec-1-jsubms)
+            naccds(k)=min(ndec-2,naccre-1,itestm-1, &
+                      ndec-1-jsubms)-iacc
+            if(naccds(k).lt.0) naccds(k)=0           
             end if
-          if(naccds(k).lt.0) naccds(k)=0
           if(abs(s1dc(k)).ge.1.0e0_knd) go to 370
           s1dc(k)=s1dc(k)*ten
           is1de(k)=is1de(k)-1
@@ -4884,7 +4882,8 @@ end if
         complex(knd) cc,dfnorm,dmfnorm,dneg,dnegjf,dnew,dnewd,dold, &
                      doldd,dc01,psum,pdsum,qndsum,qdsum,qnsum, &
                      qsum,r1c,r1dc,r2c,r2dc,spsum,spdsum,wronc, &
-                     wronca,wroncb,wront,xden,xdrhor,xrhs
+                     wronca,wroncb,wront,xden,xcoef,xrhs
+        complex(knd) anumt1,anumt2,anumt3,anumt4,dent1,dent2              
         complex(knd) drhor(maxdr),enr(maxd),enrneg(maxmp),fajo(lnum+1)
 
 !
@@ -5308,40 +5307,62 @@ end if
         if(nacccor.gt.naccrpl) nacccor=naccrpl
         nacclega=naccleg
         if(naccleg.gt.0) naccleg=min(naccleg+nacccor,ndec-jsub,naccr1)
+    nacclegb=naccleg    
         nstest=max(nspsum,nspdsum)
         iflag2=0
         if(nsdrhor1.ne.0.and.naccleg.lt.minacc.and.nacclega.gt.1 &
            .and.x.le.0.01e0_knd) iflag2=1
-          if(iflag2.eq.1) then
-          ncw=int(log10(abs(wronca/wroncb)))
-          if(ncw.gt.ndec) ncw=ndec
-          if(ncw.lt.-ndec) ncw=-ndec
-          nsqc=int(log10(abs(psum/qsum)))
-          nsqdc=int(log10(abs(pdsum/qdsum)))
-          nsqnc=0
-          if(qnsum.ne.0.0e0_knd) nsqdc=int(log10(abs(psum/qnsum)))
-          nsqndc=0
-          if(qndsum.ne.0.0e0_knd) nsqndc=int(log10(abs(pdsum/qndsum)))
-          if(ix.eq.0) nsc=max(nsqsum-nsqc,nsqnsum-nsqnc,nspsum,0)
-          if(ix.eq.1) nsc=max(nsqdsum-nsqdc,nsqndsum-nsqndc,nspdsum,0)
-          if(ix.eq.0) nacclest=ndec-max(nsc-ncw,0)
-          if(ix.eq.1) nacclest=ndec-max(nsc+ncw,0)
-          nacclest=min(nacclest,naccr1,ndec-nacccor-2,ndec-ifsub)
+          if(iflag2.eq.1) then      
+          anumt1=qdsum*r1c*ten**(ir1e+iqdsum)
+          anumt2=qndsum*r1c*ten**(ir1e+iqdsum)
+          anumt3=qsum*r1dc*ten**(ir1de+iqsum)
+          anumt4=qnsum*r1dc*ten**(ir1de+iqsum)
+          numc1=-ndec
+          if(abs(anumt1).ne.0.0e0_knd) numc1=int(log10(abs(anumt1/wront)))
+          numc2=-ndec
+          if(abs(anumt2).ne.0.0e0_knd) numc2=int(log10(abs(anumt2/wront)))
+          numc3=-ndec
+          if(abs(anumt3).ne.0.0e0_knd) numc3=int(log10(abs(anumt3/wront)))
+          numc4=-ndec
+          if(abs(anumt4).ne.0.0e0_knd) numc4=int(log10(abs(anumt4/wront)))
+          nacct1=ndec-(max(ifsub,nsqdsum)+numc1)
+          if(nacct1.gt.ndec) nacct1=ndec
+          nacct2=ndec-(max(ifsub,nsqndsum)+numc2)
+          if(nacct2.gt.ndec) nacct2=ndec
+          nacct3=ndec-(max(ifsub,nsqsum)+numc3)
+          if(nacct3.gt.ndec) nacct3=ndec
+          nacct4=ndec-(max(ifsub,nsqnsum)+numc4)
+          if(nacct4.gt.ndec) nacct4=ndec 
+          naccnum=min(nacct1,nacct2,nacct3,nacct4)
+          if(naccnum.lt.0) naccnum=0
+          dent1=r1c*pdsum*ten**(ir1e+iqdsum)
+          dent2=r1dc*psum*ten**(ir1de+iqsum)
+          nratio=0
+          if(abs(dent1*dent2).ne.0.0e0_knd) &
+              nratio=int(log10(abs(dent1/dent2)))
+            if(nratio.gt.0) then
+            naccd1=ndec-nspdsum
+            naccd2=ndec-nspsum+nratio
+            else
+            naccd2=ndec-nspsum
+            naccd1=ndec-nspdsum-nratio
+            end if
+          nacclest=min(naccnum,naccd1,naccd2,naccr1,itestm-2,ndec-nacccor)   
           if(nacclest.lt.0) nacclest=0
             if(nacclest.gt.naccleg) then
             xrhs=wront-(qdsum+qndsum)*r1c*ten**(ir1e+iqdsum)+ &
                     (qsum+qnsum)*r1dc*ten**(ir1de+iqsum)
             xden=(r1c*pdsum*ten**(ir1e+iqdsum)-r1dc*psum* &
-                    ten**(ir1de+iqsum))/drhor(1)
-            xdrhor=xrhs/xden
-            psum=psum*xdrhor/drhor(1)
-            pdsum=pdsum*xdrhor/drhor(1)
+                    ten**(ir1de+iqsum))
+            xcoef=xrhs/xden
+            psum=psum*xcoef
+            pdsum=pdsum*xcoef
             r2c=qsum+qnsum+psum
             r2dc=qdsum+qndsum+pdsum
             jflagl=1
             naccleg=nacclest
             end if
-          end if
+          end if    
         nqs=0
         if(qsum/r2c.eq.0.0e0_knd) nqs=-ndec
         if(qsum/r2c.ne.0.0e0_knd) nqs=int(log10(abs(qsum/r2c)))
@@ -5392,6 +5413,8 @@ end if
         nsubdleg=max(nsqdsum,nsqndsum,nspdsum,jsub)
         naccleg=min(naccleg,ndec-max(nsubleg,nsubdleg))
         if(naccleg.lt.0) naccleg=0
+        if(jflag.eq.1) naccleg=min(naccleg,ndec-max(nsqsum,nsqnsum, &
+                      nsqdsum,nsqndsum))
         if(ioppsum.ne.0.and.naccleg.gt.2.and.nps.lt.(-ndec-ndec).and. &
             npds.lt.(-ndec-ndec)) ioppsum=0
         if(iopqnsum.ne.0.and.naccleg.ne.0.and.nqns.lt.(-ndec-ndec).and. &
@@ -5435,7 +5458,7 @@ if (debug) then
                i6,' terms avail.; 'i2,' and ',i2,' digits of',/,15x, &
                'sub. error in r2 and r2d; psum and qnsum are ', &
                'negligible.')
-        if(jflagl.eq.1) write(40,230)
+        if(jflagl.eq.1) WRITE(40,230)
 230     format(15x,'Wronskian used to improve accuracy of the', &
                 ' the leading psum coefficient drhor(1).')
 end if
@@ -6745,7 +6768,7 @@ end if
         if(l.eq.m.or.l.eq.m+1) limdb=2*ienr
         if(limdb.gt.limd) limdb=limd
 !
-!  begin bouwkamp procedure
+!  begin Bouwkamp procedure
         iflag=0
         ix=l-m-2*lm2
         ifc=1
@@ -7513,6 +7536,7 @@ end if
         iterm=int(log10(abs(dneg)))
         dneg=dneg*(ten**(-iterm))
         idneg=idneg+iterm
+        if(nsdneg.gt.6.and.aimag(cc).le.5.0e0_knd) nsdneg=nsdneg-1
 !
 !  calculate ratios of d rho coefficients
 !
@@ -7689,7 +7713,7 @@ end if
 !                        radial functions of the first kind and their
 !                        first derivatives.
 !                        iopd is set = 4 when pleg is being used to
-!                        compute ratios of both the legendre functions
+!                        compute ratios of both the Legendre functions
 !                        and their first derivatives for use is the
 !                        calculation of r2 and r2d in r2leg.
 !               ndec   : number of decimal digits in real(knd)

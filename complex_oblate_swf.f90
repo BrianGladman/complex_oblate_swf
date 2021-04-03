@@ -29,6 +29,14 @@ module complex_oblate_swf
 !               angle coordinate eta for a given value of c and m and
 !               for a specified number of degrees l = m, m+1,..., m+lnum-1
 !
+!  Coblfcn provides function values for c complex = real(c) + i aimag(c)
+!  = cr + i ci, where the imaginary part ci often accounts for losses in
+!  wave propagation. Ci is assumed positive in coblfcn. If the user has
+!  a negative value for ci, just run coblfcn with ci positive instead
+!  and take the complex conjugate of the results, including the function
+!  values, eigenvalues, expansion coefficients, and normalization
+!  factors.
+!
 !  Coblfcn can be run in double precision, quadruple precision or a hybrid
 !  where the Bouwkamp procedure to refine the eigenvalues is run in quadruple
 !  precision while the remainder of the calculations are performed in double
@@ -119,6 +127,7 @@ module complex_oblate_swf
 !
 !          arg:     vector containing the values of eta for which
 !                   angular functions are desired [real(knd)]
+!
 !          r1c   :  vectors of length lnum containing the complex
 !          r1dc     characteristics for the radial functions of the
 !                   first kind r1 and their first derivatives [complex(knd)]
@@ -152,7 +161,11 @@ module complex_oblate_swf
 !
 !          naccs  : two-dimensional array naccs(lnum,narg) containing
 !                   narg estimated accuracy values for the angular functions
-!                   for each of the lnum values of l 
+!                   for each of the lnum values of l
+!
+!          naccds : two-dimensional array naccds(lnum,narg) containing
+!                   narg estimated accuracy values for the first derivatives
+!                   of the angular functions for each of the lnum values of l
 !
 !     Output files
 !
@@ -373,7 +386,7 @@ end if
         call main (mmin, minc, mnum, lnum, c, ioprad, iopang, iopnorm, minacc, &
                    x, ngau, step1, nstep1, step2, nstep2, step3, nstep3, narg, &
                    arg, maxd, maxdr, maxe, maxe2, maxint, maxj, maxlp, maxm, &
-                   maxmp, maxn, maxp, maxp1, maxpdr, maxq, maxt, neta, jnenmax, &
+                   maxmp, maxn, maxp, maxpdr, maxq, maxt, neta, jnenmax, &
                    jnebmax, xneu, ndec, nex, kindd, kindq, r1c, ir1e, r1dc, &
                    ir1de, r2c, ir2e, r2dc, ir2de, naccr, s1c, is1e, s1dc, is1de, naccs, naccds)
 !
@@ -383,7 +396,7 @@ end if
         subroutine main (mmin, minc, mnum, lnum, cc, ioprad, iopang, iopnorm, &
                          minacc, x, ngau, step1, nstep1, step2, nstep2, step3, &
                          nstep3, narg, barg, maxd, maxdr, maxe, maxe2, maxint, &
-                         maxj, maxlp, maxm, maxmp, maxn, maxp, maxp1, maxpdr, &
+                         maxj, maxlp, maxm, maxmp, maxn, maxp, maxpdr, &
                          maxq, maxt, neta, jnenmax, jnebmax, xneu, ndec, nex, &
                          kindd, kindq, r1c, ir1e, r1dc, ir1de, r2c, ir2e, r2dc, &
                          ir2de, nar, s1, is1, s1d, is1d, nas, nads)
@@ -438,12 +451,8 @@ end if
 !               ioparg : =0 if both arg1 and darg are angles in degrees
 !                        =1 if arg1 and darg are dimensionless values
 !                           of eta
-!               arg1   : first value for the angle coordinate (in
-!                        degrees or dimensionless if equal to eta)
-!                        for which angular functions are to be computed
-!               darg   : increment used to calculate additional desired
-!                        arguments for angular functions.
-!               narg   : number of desired angle arguments.
+!               narg   : number of desired eta values
+!               barg   : vector of the narg eta values
 !               maxd   : dimension of enr array containing ratios of
 !                        the expansion d coefficients
 !               maxdr  : dimension of drhor array containing special d
@@ -555,9 +564,12 @@ end if
 !                        subroutine profcn)
 !               is1d   : array of exponents corresponding to s1d
 !                       (is1de in call to subroutine profcn)
-!               nas    : two-dimensional array naccs(lnum,narg) containing
+!               nas    : two-dimensional array nas(lnum,narg) containing
 !                        narg estimated accuracy values for the angular functions
 !                        for each of the lnum values of l
+!               nads   : two-dimensional array nads(lnum,narg) containing
+!                        narg estimated accuracy values for the first derivatives
+!                        of the angular functions for each of the lnum values of l
 !
         use param
 !
@@ -1208,7 +1220,7 @@ end if
                 max1o = min(limd, max1o)
                 end if
 !
-!  compute the coeficients in the bouwkamp method
+!  compute the coeficients in the Bouwkamp method
               if(ix == 1) go to 310
 !
 !  beta coefficients (bliste) for l-m even
@@ -3070,8 +3082,8 @@ if (debug) then
                   write(40, 1395) naccrp, l - 1
 end if
                   end if
-                  if(iopmatchp == 0 .and. naccrps >= naccrp) &
-                       naccrp = naccrps
+                if(iopmatchp == 0 .and. naccrps >= naccrp) &
+                     naccrp = naccrps
                   if(jjflagl == 1 .or. naccrp == min(naccrplp, naccr1p)) &
                       then
 if (output) then
@@ -3096,8 +3108,8 @@ if (debug) then
                   write(40, 1395) naccr, l
 end if
                   end if
-                  jjflagl = 0
-                  if(iopmatch == 0 .and. naccr == naccleg .and.  &
+                jjflagl = 0
+                if(iopmatch == 0 .and. naccr == naccleg .and.  &
                     naccint /= naccr .and. jflagl == 1) jjflagl = 1
                   if(jjflagl == 1 .or. naccr == min(naccrpl, naccr1)) &
                       then
@@ -3116,7 +3128,7 @@ end if
                 naccrsav = naccr
                 go to 1400
                 end if
-if (output) then
+if (debug) then
 1360          format(8x,'Values for r2 and r2d for ','l = ',i5, &
                      ' are given by r1 and r1d for l = ',i5)
 1370          format(8x,'Values for r2 and r2d for ','l = ',i5, &
@@ -3247,7 +3259,7 @@ if (warn) then
                 write(60,*) ' est. acc. = ',naccr,' digits for m = ',m, &
                  ' l = ', l,' x = ',x,' c = ',cc
                 end if
-    end if
+end if
 if (warn) then
               if(ioprad == 1 .and. naccr1 < 6) write(60,*) &
                  'est. r1 acc. = ',naccr1,' digits for m = ',m,' l = ', &
@@ -3286,28 +3298,29 @@ end if
                 is1(li, jarg) = is1e(jarg)
                 is1d(li, jarg) = is1de(jarg)
                 nas(li, jarg) = naccs(jarg)
-                nads(li, jarg) = naccds(jarg)
+                nads(li, jarg) = 0
+                if(iopang == 2) nads(li, jarg) = naccds(jarg)
 if (debug) then
-                if(iopang == 1) write(50, 1425) barg(jarg), naccs(jarg)
+                if(iopang == 1) write(50, 1430) barg(jarg), naccs(jarg)
                 if(iopang == 2) write(50, 1435) barg(jarg), naccs(jarg), naccds(jarg)
-1425            format(1x,'eta = ',e24.15,'   accuracy = ',i2, ' digits.')
-1435            format(1x,'eta = ',e24.15,'   s1 and s1d accuracy = ', i2,' and ',i2,' digits.')
+1430            format(1x,'eta = ',e24.15,'   accuracy = ',i2, ' digits.')
+1435            format(1x,'eta = ',e24.15,'   s1 and s1d accuracy = ',i2,' and ',i2,' digits.')
 end if
 if (output) then
-                if(iopang == 1) write(30, 1460) barg(jarg), s1c(jarg), is1e(jarg), naccs(jarg)
-                if(iopang == 2) write(30, 1470) barg(jarg), s1c(jarg), is1e(jarg), s1dc(jarg), is1de(jarg), naccs(jarg), naccds(jarg)
-1460            format(1x, f17.14, 2x, f17.14, 1x, f17.14, 2x, i5, 2x,', ',i2)
-1470            format(1x, f17.14, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, i2,', ',i2)
+                if(iopang == 1) write(30, 1440) barg(jarg), s1c(jarg), is1e(jarg), naccs(jarg)
+                if(iopang == 2) write(30, 1450) barg(jarg), s1c(jarg), is1e(jarg), s1dc(jarg), is1de(jarg), naccs(jarg), naccds(jarg)
+1440            format(1x, f17.14, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, i2)
+1450            format(1x, f17.14, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, i2,', ',i2)
 end if
 if (debug) then
-                if(knd == kindd .and. iopang == 1) write(50, 1480) s1c(jarg), is1e(jarg)
-                if(knd == kindd .and. iopang == 2) write(50, 1485) s1c(jarg), is1e(jarg), s1dc(jarg), is1de(jarg)
-                if(knd == kindq .and. iopang == 1) write(50, 1490) s1c(jarg), is1e(jarg)
-                if(knd == kindq .and. iopang == 2) write(50, 1495) s1c(jarg), is1e(jarg), s1dc(jarg), is1de(jarg)
-1480            format(12x,'s1 = ',f17.14, f17.14, 2x, i5)
-1485            format(12x,'s1 = ',f17.14, 1x, f17.14, 2x, i5, 5x,'s1d = ', f17.14, 1x, f17.14, 2x, i5)
-1490            format(12x,'s1 = ',f35.31, f35.31, 2x, i5)
-1495            format(12x,'s1 = ',f35.31, 1x, f35.31, 2x, i5,/12x,'s1d = ',f35.31, 1x, f35.31, 2x, i5)
+                if(knd == kindd .and. iopang == 1) write(50, 1460) s1c(jarg), is1e(jarg)
+                if(knd == kindd .and. iopang == 2) write(50, 1470) s1c(jarg), is1e(jarg), s1dc(jarg), is1de(jarg)
+                if(knd == kindq .and. iopang == 1) write(50, 1480) s1c(jarg), is1e(jarg)
+                if(knd == kindq .and. iopang == 2) write(50, 1490) s1c(jarg), is1e(jarg), s1dc(jarg), is1de(jarg)
+1460            format(12x,'s1 = ',f17.14, f17.14, 2x, i5)
+1470            format(12x,'s1 = ',f17.14, 1x, f17.14, 2x, i5, 5x,'s1d = ',f17.14, 1x, f17.14, 2x, i5)
+1480            format(12x,'s1 = ',f35.31, f35.31, 2x, i5)
+1490            format(12x,'s1 = ',f35.31, 1x, f35.31, 2x, i5,/12x,'s1d = ',f35.31, 1x, f35.31, 2x, i5)
 end if
 1500            continue
 1510          continue
@@ -3655,8 +3668,9 @@ end if
             iacc = int(log10(abs((fterm) / (s1))))
             if(iacc < 0) iacc = 0
             if(iacc > ndec) iacc = ndec
-            naccs(k) = min(ndec - 2 - iacc, naccre - 1, itestm - 1, &
-                     ndec - 1 - jsubms)
+            naccs(k) = min(ndec - 2, naccre - 1, itestm - 1, &
+                     ndec - 1 - jsubms) - iacc
+            if(naccs(k) < 0) naccs(k) = 0
             end if
           if(naccs(k) > 0) go to 300
           naccs(k) = 0
@@ -3721,10 +3735,10 @@ end if
             iacc = int(log10(abs((fterm) / (s1d))))
             if(iacc < 0) iacc = 0
             if(iacc > ndec) iacc = ndec
-            naccds(k) = min(ndec - 2 - iacc, naccre - 1, itestm - 1, &
-                      ndec - 1 - jsubms)
+            naccds(k) = min(ndec - 2, naccre - 1, itestm - 1, &
+                      ndec - 1 - jsubms) - iacc
+            if(naccds(k) < 0) naccds(k) = 0           
             end if
-          if(naccds(k) < 0) naccds(k) = 0
           if(abs(s1dc(k)) >= 1.0e0_knd) go to 370
           s1dc(k) = s1dc(k) * ten
           is1de(k) = is1de(k) - 1
@@ -4919,7 +4933,8 @@ end if
         complex(knd) cc, dfnorm, dmfnorm, dneg, dnegjf, dnew, dnewd, dold, &
                      doldd, dc01, psum, pdsum, qndsum, qdsum, qnsum, &
                      qsum, r1c, r1dc, r2c, r2dc, spsum, spdsum, wronc, &
-                     wronca, wroncb, wront, xden, xdrhor, xrhs
+                     wronca, wroncb, wront, xden, xcoef, xrhs
+        complex(knd) anumt1, anumt2, anumt3, anumt4, dent1, dent2              
         complex(knd) drhor(maxdr), enr(maxd), enrneg(maxmp), fajo(lnum + 1)
 
 !
@@ -5343,34 +5358,56 @@ end if
         if(nacccor > naccrpl) nacccor = naccrpl
         nacclega = naccleg
         if(naccleg > 0) naccleg = min(naccleg + nacccor, ndec - jsub, naccr1)
+    nacclegb = naccleg    
         nstest = max(nspsum, nspdsum)
         iflag2 = 0
         if(nsdrhor1 /= 0 .and. naccleg < minacc .and. nacclega > 1 &
             .and. x <= 0.01e0_knd) iflag2 = 1
-          if(iflag2 == 1) then
-          ncw = int(log10(abs(wronca / wroncb)))
-          if(ncw > ndec) ncw = ndec
-          if(ncw < -ndec) ncw = -ndec
-          nsqc = int(log10(abs(psum / qsum)))
-          nsqdc = int(log10(abs(pdsum / qdsum)))
-          nsqnc = 0
-          if(qnsum /= 0.0e0_knd) nsqdc = int(log10(abs(psum / qnsum)))
-          nsqndc = 0
-          if(qndsum /= 0.0e0_knd) nsqndc = int(log10(abs(pdsum / qndsum)))
-          if(ix == 0) nsc = max(nsqsum - nsqc, nsqnsum - nsqnc, nspsum, 0)
-          if(ix == 1) nsc = max(nsqdsum - nsqdc, nsqndsum - nsqndc, nspdsum, 0)
-          if(ix == 0) nacclest = ndec - max(nsc - ncw, 0)
-          if(ix == 1) nacclest = ndec - max(nsc + ncw, 0)
-          nacclest = min(nacclest, naccr1, ndec - nacccor - 2, ndec - ifsub)
+          if(iflag2 == 1) then      
+          anumt1 = qdsum * r1c * ten ** (ir1e + iqdsum)
+          anumt2 = qndsum * r1c * ten ** (ir1e + iqdsum)
+          anumt3 = qsum * r1dc * ten ** (ir1de + iqsum)
+          anumt4 = qnsum * r1dc * ten ** (ir1de + iqsum)
+          numc1 = -ndec
+          if(abs(anumt1) /= 0.0e0_knd) numc1 = int(log10(abs(anumt1 / wront)))
+          numc2 = -ndec
+          if(abs(anumt2) /= 0.0e0_knd) numc2 = int(log10(abs(anumt2 / wront)))
+          numc3 = -ndec
+          if(abs(anumt3) /= 0.0e0_knd) numc3 = int(log10(abs(anumt3 / wront)))
+          numc4 = -ndec
+          if(abs(anumt4) /= 0.0e0_knd) numc4 = int(log10(abs(anumt4 / wront)))
+          nacct1 = ndec - (max(ifsub, nsqdsum) + numc1)
+          if(nacct1 > ndec) nacct1 = ndec
+          nacct2 = ndec - (max(ifsub, nsqndsum) + numc2)
+          if(nacct2 > ndec) nacct2 = ndec
+          nacct3 = ndec - (max(ifsub, nsqsum) + numc3)
+          if(nacct3 > ndec) nacct3 = ndec
+          nacct4 = ndec - (max(ifsub, nsqnsum) + numc4)
+          if(nacct4 > ndec) nacct4 = ndec 
+          naccnum = min(nacct1, nacct2, nacct3, nacct4)
+          if(naccnum < 0) naccnum = 0
+          dent1 = r1c * pdsum * ten ** (ir1e + iqdsum)
+          dent2 = r1dc * psum * ten ** (ir1de + iqsum)
+          nratio = 0
+          if(abs(dent1 * dent2) /= 0.0e0_knd) &
+              nratio = int(log10(abs(dent1 / dent2)))
+            if(nratio > 0) then
+            naccd1 = ndec - nspdsum
+            naccd2 = ndec - nspsum + nratio
+            else
+            naccd2 = ndec - nspsum
+            naccd1 = ndec - nspdsum - nratio
+            end if
+          nacclest = min(naccnum, naccd1, naccd2, naccr1, itestm - 2, ndec - nacccor)   
           if(nacclest < 0) nacclest = 0
             if(nacclest > naccleg) then
             xrhs = wront - (qdsum + qndsum) * r1c * ten ** (ir1e + iqdsum)+ &
                     (qsum + qnsum) * r1dc * ten ** (ir1de + iqsum)
             xden = (r1c * pdsum * ten ** (ir1e + iqdsum) - r1dc * psum* &
-                    ten ** (ir1de + iqsum)) / drhor(1)
-            xdrhor = xrhs / xden
-            psum = psum * xdrhor / drhor(1)
-            pdsum = pdsum * xdrhor / drhor(1)
+                    ten ** (ir1de + iqsum))
+            xcoef = xrhs / xden
+            psum = psum * xcoef
+            pdsum = pdsum * xcoef
             r2c = qsum + qnsum + psum
             r2dc = qdsum + qndsum + pdsum
             jflagl = 1
@@ -5427,6 +5464,8 @@ end if
         nsubdleg = max(nsqdsum, nsqndsum, nspdsum, jsub)
         naccleg = min(naccleg, ndec - max(nsubleg, nsubdleg))
         if(naccleg < 0) naccleg = 0
+        if(jflag == 1) naccleg = min(naccleg, ndec - max(nsqsum, nsqnsum, &
+                      nsqdsum, nsqndsum))
         if(ioppsum /= 0 .and. naccleg > 2 .and. nps < (-ndec - ndec) .and.  &
             npds < (-ndec - ndec)) ioppsum = 0
         if(iopqnsum /= 0 .and. naccleg /= 0 .and. nqns < (-ndec - ndec) .and.  &
@@ -5909,7 +5948,7 @@ end if
         nsub0 = max(naccs1, naccs2)
 if (debug) then
         write(40, 110) nterms, lim, jtestm, naccs1, jtestdm, naccs2
-110     format(8x,'r2neu0 (eta = 0) : numerator converged in ',i6, &
+110     format(8x,'r2neu0 (eta=0) : numerator converged in ',i6, &
                ' terms; ',i6,' terms available.',/,15x,'r2 converged ', &
                'to ',i3,' digits with ',i3,' digits sub. error.',/, &
                15x,'r2d converged to ',i3,' digits with ',i3,' digits ', &
@@ -6312,6 +6351,7 @@ end if
         if(naccn > nacceta) naccnmax = max(naccnmaxp, nacceta)
         return
         end subroutine
+
 !
 !
         subroutine cmtql1(n, maxe, d, e, ndec)
@@ -6780,7 +6820,7 @@ end if
         if(l == m .or. l == m + 1) limdb = 2 * ienr
         if(limdb > limd) limdb = limd
 !
-!  begin bouwkamp procedure
+!  begin Bouwkamp procedure
         iflag = 0
         ix = l - m - 2 * lm2
         ifc = 1
@@ -7548,6 +7588,7 @@ end if
         iterm = int(log10(abs(dneg)))
         dneg = dneg * (ten ** (-iterm))
         idneg = idneg + iterm
+        if(nsdneg > 6 .and. aimag(cc) <= 5.0e0_knd) nsdneg = nsdneg - 1
 !
 !  calculate ratios of d rho coefficients
 !
@@ -7724,7 +7765,7 @@ end if
 !                        radial functions of the first kind and their
 !                        first derivatives.
 !                        iopd is set = 4 when pleg is being used to
-!                        compute ratios of both the legendre functions
+!                        compute ratios of both the Legendre functions
 !                        and their first derivatives for use is the
 !                        calculation of r2 and r2d in r2leg.
 !               ndec   : number of decimal digits in real(knd)
