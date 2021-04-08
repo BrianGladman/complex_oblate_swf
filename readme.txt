@@ -1,4 +1,4 @@
-                               Complex_Oblate_swf
+                               complex_oblate_swf
 
   Coblfcn is available as both a subroutine version provided as the
   module complex_oblate_swf and a stand alone version coblfcn. It was
@@ -41,7 +41,7 @@
   precision. In the latter case, coblfcn switches to quadruple precision for
   the Bouwkamp procedure whenever double precision fails to provide highly
   accurate eigenvalues. See the discussion below about when to choose which
-  arithmetic.The choice is set in the module param provided in the github
+  arithmetic. The choice is set in the module param provided in the github
   repository. If this is not available, then create param as follows:
 
     module param
@@ -74,10 +74,11 @@
   values of the size parameter. A description of the methods used in
   oblfcn is provided in the article 'Accurate calculation of oblate
   spheroidal wave functions,' available at arXiv.org, identifier
-  1708.07929, August 2017, revised September 2019. Coblfcn provides
-  function values for c complex = real(c) + i aimag(c) = cr + i ci,
-  where the imaginary part ci often accounts for losses in wave
-  propagation. Ci is assumed positive in coblfcn. If the user has
+  1708.07929, August 2017, revised September 2019.
+
+  Coblfcn provides function values for c complex = real(c) + i aimag(c)
+  = cr + i ci, where the imaginary part ci often accounts for losses in
+  wave propagation. Ci is assumed positive in coblfcn. If the user has
   a negative value for ci, just run coblfcn with ci positive instead
   and take the complex conjugate of the results, including the function
   values, eigenvalues, expansion coefficients, and normalization
@@ -483,14 +484,18 @@
      the associated values of x, c, m, and l are written to fort.60.
      The integer is currently set equal to 6 in the write statements
      for this file found after the line numbered 1405 in subroutine main.
+     Whenever coblfcn determines that two or more of the eigenvalues of
+     the same parity are duplicates, indicating a failure of the Bouwkamp
+     routine to converge to the correct eigenvalue, the values of m,l and
+     c where this occurs are written to fort.60.
 
   4. Accuracy of Results
 
   The following discussion is provided to help the user choose which
-  arithmetic option to use. If the compiler does not support quadriple
-  arithmetic, then the only option is to use double precision. If
-  the compiler does support quadruple precision arithmetic, then it is
-  recommended that the hybrid version be used instead of the entirely
+  arithmetic option to use. If the compiler does not support quadruple
+  precision arithmetic, then the only option is to use double precision.
+  If the compiler does support quadruple precision arithmetic, then it
+  is recommended that the hybrid version be used instead of the entirely
   double precision version whenever double precision is expected to
   provide adequate accuracy. Use of quadruple precision arithmetic
   for the Bouwkamp procedure increases the run time somewhat but the
@@ -498,20 +503,21 @@
   The improvement in accuracy increases as ci increases. If the input
   parameters are outside those for which the hybrid version is expected
   to provide useful results, then the only choice is to use quadruple
-  precision if it is available. Note that this might increase the run
-  time by a factor of 50 or more.
+  precision if it is available. Note that this will increase the run
+  time, although coblfcn runs reasonably fast in quadruple precision
+  when cr is not very large.
 
   Coblfcn was tested extensively using a laptop pc and a Fortran
   compiler that provides approximately 15 decimal digits in double
   precision arithmetic and approximately 33 digits in quadruple
   precision arithmetic. More recently, coblfcn was also tested using a
   compiler from Absoft that also provided 15 decimal digits for double
-  precision but provided 31 digits of precision for quadruple
-  precision. The discussion below will include both the 33 digit and
-  31 digit results for quadruple precision. If the user's computer
-  provides a different number of digits for either double or quadruple
-  precision, the following estimates might need to be adjusted up or
-  down depending on whether more or fewer digits are provided.
+  precision but provided 31 digits of precision for quadruple precision
+  The discussion below will include both the 33 digit and 31 digit
+  results for quadruple precision. If the user's computer provides a
+  different number of digits for either double or quadruple precision, the
+  following estimates might need to be adjusted up or down depending
+  on whether more or fewer digits are provided.
 
   The estimated accuracy of the resulting function values is given
   below in terms of decimal digits. It is often obtained using the
@@ -535,8 +541,8 @@
   minimum number of accurate digits desired for the radial spheroidal
   functions of the second kind. The value of minacc controls which
   methods are used to calculate the radial functions. Minacc is set
-  equal to 8 for 64 bit arithmetic. It is recommended that this not
-  be changed. For 128 arithmetic minacc is set equal to 15 digits
+  equal to 8 for double precision. It is recommended that this not
+  be changed. For quadruple precision minacc is set equal to 15 digits
   for values of ci up to 20. This should provide 15 or more digits of
   accuracy here. For ci > 20, minacc is set equal to 8 digits. Minacc
   can be increased in this case but higher accuracy might not always
@@ -578,32 +584,34 @@
   somewhat below the so-called breakpoint. [The breakpoint is defined
   as the minimum value of l such that the magnitudes of r2 and r2d
   begin to increase with increasing l while the magnitudes of r1 and
-  r1d begin to decrease. An approximate value for the breakpoint for
+  r1d begin to decrease. An approximate value for the breakpoint
   for small values of m is given by l = 2*(cr+ci)/pi]. No 5 digit
   results were seen for cr up to 200 or so. Only a few 5 digit results
-  were seen for x >= 0.001, even for cr = 5000. The largest number of 5
-  digit results occurred for cr = 5000 and x = 0.000001. Even here,
-  however, there were no more than about 3 such results for each m. See
-  the discussions below about the estimated accuracy of the angular
-  functions.
+  were seen, even for cr = 5000. See the discussions below about the
+  estimated accuracy of the angular functions.
 
   Similar testing when ci was increased to 12 showed a few more 5 digit
-  results for small x. At least 5 digits were obtained for cr up to
-  5000 for all of the values of x down to 0.000001.
+  results. At least 5 digits were obtained for cr up to 5000 for all of
+  the values of x down to 0.000001.
 
-  Testing with ci = 15 showed yet more 5 digits results and even 4
-  digit results for cr = 5000. However, at least 5 digits of accuracy
-  were obtained for cr up to 2000 for all values of x down to 0.000001.
+  Testing with ci = 15 showed at least 5 digits of accuracy for cr up to
+  2000 for all values of x down to 0.000001. Testing at cr = 5000 showed
+  poor results with accuracies as low as 0 digits for m = 0. This was due
+  to a poor matrix starting value for the eigenvalue together with a lack
+  of convergence of the Bouwkamp procedure, even when using quadruple
+  precision for this procedure. 
 
   When ci = 20, there were 5 or more digits of accuracy for all tested
-  values of x when cr <= 95. There were 5 or more digits of accuracy at
-  x >= 0.1 for cr = 150 and at x >= 0.2 for cr up to 2000. Testing
-  showed duplicated eigenvalues of the same parity for some values of
-  m when cr = 5000.
+  values of x when cr <= 70. There was one estimated accuracy of 4 digits
+  for x = .01, but it was found to actually be accurate to 5 digits when
+  compared to quadruple precision results. There were 5 or more digits
+  of accuracy at x >= 0.1 for cr = 150 and at x >= 0.2 for cr up
+  to 2000. Testing showed duplicated eigenvalues of the same parity for
+  some values of m when cr = 5000. See the discussion of fort.60 above.
 
   When ci = 25, there were at least 5 digits of accuracy for x >= 0.2
   when cr <= 100, for x >= 0.3 when cr = 150 and for x >= 0.4 when cr
-  = 200 and 250.
+  = 200.
 
   Testing for yet higher values of ci showed a continued increase in
   the minimum value of x and a decrease in the maximum value of cr for
@@ -612,18 +620,20 @@
   small values of cr, then the double precision, or more likely the
   hybrid version, of coblfcn may be useful when ci is greater than 25.
   Otherwise, it will be necessary to use the quadruple precision
-  version. It is recommended that the file fort.60 described below be
-  used to assure that you are obtaining the accuracy you need and that
-  there are no repeated eigenvalues of the same parity. Testing showed
-  the appearance of duplicated eigenvalues for ci = 45 for some values
-  of m when cr was only 200.
+  version. Note that coblfcn runs reasonably fast in quadruple precision
+  for small to moderate values of cr. If you use double precision here,
+  it is recommended that the file fort.60 described below be used to
+  assure that you are obtaining the accuracy you need and that there are
+  no repeated eigenvalues of the same parity. Testing showed the appearance
+  of duplicated eigenvalues for ci = 45 for some values of m when cr was
+  only 200.
 
   Quadruple precision arithmetic
 
-  When lower accuracy occurs with 64 bit arithmetic, much higher
-  accuracy can be obtained using 128 bit arithmetic. However, coblfcn
-  runs faster by a factor up to 50 or more in 64 bit arithmetic
-  than it does for 128 bit arithmetic.
+  When lower accuracy occurs using double precision arithmetic, much
+  higher accuracy can be obtained using quadruple precision, but with
+  a considerable increase in computation time, especially for very large
+  cr.
 
   When there were 33 digits of precision, testing for values of ci up
   to 40 showed that coblfcn provides useful results for cr up to at
@@ -641,7 +651,7 @@
   for x down to 0.000001 and cr up to at least 2000. Accuracies for the
   radial functions were almost always at least 8 or more digits but
   occasional accuracies as low as 5 digits were seen near the
-  breakpoint, primarily for cr >= 1000 and m > 200. When cr = 2000,
+  breakpoint, primarily for cr >= 1  000 and m > 200. When cr = 2000,
   there were even a few 4 digit results for m >= 700 and a few 3 digit
   results for m >= 800. It is unlikely that values of m this large will
   be required by the user. When there were 31 digits of precision,
@@ -651,7 +661,7 @@
   of 5 digit results and even an occasional 4 digit result for m
   between 200 and 350. There were also useful results for cr up to 2000
   when x was no larger than about 0.01 and m was no larger than about
-  600.
+  600.  
 
   Testing for ci = 60 with 33 digits of precision showed useful results
   for all m and x>= 0.000001 with cr up to 100 although a few 4 digit

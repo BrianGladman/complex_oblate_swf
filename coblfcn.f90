@@ -1865,11 +1865,13 @@ end if
                     nsubd1p+1.and.li.gt.4*nbp/3) then
                     iopeta1=0
                     isteta1=0
+                    iopbes=2
                     go to 750
                     end if
                     if(iopbesa.eq.1.and.nsub1.gt.nsub1p+4.and.nsubd1.gt. &
                     nsubd1p+4) then
                     iopeta1=0
+                    iopbes=2
                     go to 750
                     end if
                   end if
@@ -3208,12 +3210,12 @@ if (warn) then
                    m,' l = ',l,' x = ',x,' c = ',cc
 end if
                 end if
-                if(ioprad.eq.2.and.li.gt.lipl.and.naccr.lt.6) then
+                if(ioprad.eq.2.and.(li.gt.lipl.or.match(2).eq.0).and.naccr.lt.6) then
 if (warn) then
                 write(60,*) ' est. acc. = ',naccr,' digits for m = ',m, &
                  ' l = ', l,' x = ',x,' c = ',cc
-                end if
 end if
+                end if
 if (warn) then
               if(ioprad.eq.1.and.naccr1.lt.6) write(60,*) &
                  'est. r1 acc. = ',naccr1,' digits for m = ',m,' l = ', &
@@ -3255,9 +3257,11 @@ if (debug) then
 end if
 if (output) then
                 if(ioparg.eq.0.and.iopang.eq.1) write(30,1440) arg(jarg),s1c(jarg),is1e(jarg),naccs(jarg)
-                if(ioparg.eq.0.and.iopang.eq.2) write(30,1450) arg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg),naccs(jarg),naccds(jarg)
+                if(ioparg.eq.0.and.iopang.eq.2) write(30,1450) arg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg), &
+                        is1de(jarg),naccs(jarg),naccds(jarg)
                 if(ioparg.eq.1.and.iopang.eq.1) write(30,1440) barg(jarg),s1c(jarg),is1e(jarg),naccs(jarg)
-                if(ioparg.eq.1.and.iopang.eq.2) write(30,1450) barg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg),is1de(jarg),naccs(jarg),naccds(jarg)
+                if(ioparg.eq.1.and.iopang.eq.2) write(30,1450) barg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg), &
+                        is1de(jarg),naccs(jarg),naccds(jarg)
 1440            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,i2)
 1450            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
 end if
@@ -3278,7 +3282,7 @@ end if
             do i=1,ijmax-2
               do j=i+2,ijmax,2
               iegch=-int(log10(abs((eig(i)-eig(j))/eig(i))+dec))
-                if(iegch.gt.min(8,ieigt(i)-1,ieigt(j)-1)) then
+                if(iegch.ge.min(8,ieigt(i)-1,ieigt(j)-1)) then
 if (warn) then
                 write(60,*) m,cc,i+m-1,j+m-1,' duplicated eigenvalue'
 end if
@@ -5068,11 +5072,6 @@ end if
           do 60 j=2,m
           dnew=-dold*enrneg(m-j+1)*qr(imxp-j-j+1)*qr(imxp-j-j+2)
           qnsum=qnsum+dnew
-          if(l.eq.1632) then
-if (debug) then
-          write(40,*) j,dnew,qnsum
-end if
-          end if
           if(real(dnew).gt.0.0e0_knd) qnsumpr=qnsumpr+real(dnew)
           if(aimag(dnew).gt.0.0e0_knd) qnsumpi=qnsumpi+aimag(dnew)
           dnewd=dnew*qdqr(imxp-j-j+1)
@@ -5362,7 +5361,7 @@ end if
             jflagl=1
             naccleg=nacclest
             end if
-          end if    
+          end if
         nqs=0
         if(qsum/r2c.eq.0.0e0_knd) nqs=-ndec
         if(qsum/r2c.ne.0.0e0_knd) nqs=int(log10(abs(qsum/r2c)))
@@ -5458,7 +5457,7 @@ if (debug) then
                i6,' terms avail.; 'i2,' and ',i2,' digits of',/,15x, &
                'sub. error in r2 and r2d; psum and qnsum are ', &
                'negligible.')
-        if(jflagl.eq.1) WRITE(40,230)
+        if(jflagl.eq.1) write(40,230)
 230     format(15x,'Wronskian used to improve accuracy of the', &
                 ' the leading psum coefficient drhor(1).')
 end if

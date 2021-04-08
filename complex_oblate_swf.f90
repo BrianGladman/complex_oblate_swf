@@ -1911,11 +1911,13 @@ end if
                     nsubd1p + 1 .and. li > 4 * nbp / 3) then
                     iopeta1 = 0
                     isteta1 = 0
+                    iopbes = 2
                     go to 750
                     end if
                     if(iopbesa == 1 .and. nsub1 > nsub1p + 4 .and. nsubd1 >  &
                     nsubd1p + 4) then
                     iopeta1 = 0
+                    iopbes = 2
                     go to 750
                     end if
                   end if
@@ -3254,7 +3256,7 @@ if (warn) then
                    m,' l = ',l,' x = ',x,' c = ',cc
 end if
                 end if
-                if(ioprad == 2 .and. li > lipl .and. naccr < 6) then
+                if(ioprad == 2 .and. (li > lipl .or. match(2) == 0) .and. naccr < 6) then
 if (warn) then
                 write(60,*) ' est. acc. = ',naccr,' digits for m = ',m, &
                  ' l = ', l,' x = ',x,' c = ',cc
@@ -3329,7 +3331,7 @@ end if
             do i = 1, ijmax - 2
               do j = i + 2, ijmax, 2
               iegch = -int(log10(abs((eig(i) - eig(j)) / eig(i)) + dec))
-                if(iegch > min(8, ieigt(i) - 1, ieigt(j) - 1)) then
+                if(iegch >= min(8, ieigt(i) - 1, ieigt(j) - 1)) then
 if (warn) then
                 write(60,*) m, cc, i + m - 1, j + m - 1,' duplicated eigenvalue'
 end if
@@ -5119,11 +5121,6 @@ end if
           do 60 j = 2, m
           dnew = -dold * enrneg(m - j + 1) * qr(imxp - j - j + 1) * qr(imxp - j - j + 2)
           qnsum = qnsum + dnew
-          if(l == 1632) then
-if (debug) then
-          write(40,*) j, dnew, qnsum
-end if
-          end if
           if(real(dnew) > 0.0e0_knd) qnsumpr = qnsumpr + real(dnew)
           if(aimag(dnew) > 0.0e0_knd) qnsumpi = qnsumpi + aimag(dnew)
           dnewd = dnew * qdqr(imxp - j - j + 1)
