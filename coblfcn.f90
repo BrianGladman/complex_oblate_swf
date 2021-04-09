@@ -700,7 +700,7 @@ if (debug) then
           if(knd.eq.kindd.and.ioprad.ne.0) write(40,20) x,cc
 20        format(1x,'x = ',e23.14,/,1x,'c = ',e23.14,e23.14)
           if(knd.eq.kindq.and.ioprad.ne.0) write(40,25) x,cc
-25        format(1x,'x = ',e38.30,/,1x,'c = ',e38.30,e38.30)
+25        format(1x,'x = ',e39.30,/,1x,'c = ',e39.30,e39.30)
 end if
           wront=1.0e0_knd/(cc*(x*x+1.0e0_knd))
             do 1540 mi=1,mnum
@@ -711,7 +711,7 @@ if (debug) then
             if(knd.eq.kindd.and.iopang.ne.0) write(50,30) cc,m
 30          format(1x,'c = ',e23.14,e23.14,'; m = ',i5)
             if(knd.eq.kindq.and.iopang.ne.0) write(50,35) cc,m
-35          format(1x,'c = ',e38.30,e38.30,'; m = ',i5)
+35          format(1x,'c = ',e39.30,e39.30,'; m = ',i5)
             if(ioprad.ne.0) write(40,40) m
 40          format(1x,'m = ',i5)
 end if
@@ -719,7 +719,7 @@ if (output) then
             if(knd.eq.kindd.and.iopang.ne.0) write(30,50) cc,m
 50          format(1x,'c = ',e23.14,e23.14,'; m = ',i5)
             if(knd.eq.kindq.and.iopang.ne.0) write(30,55) cc,m
-55          format(1x,'c = ',e38.30,e38.30,'; m = ',i5)
+55          format(1x,'c = ',e39.30,e39.30,'; m = ',i5)
 end if
             rm=m
             rm2=m+m
@@ -1016,7 +1016,7 @@ if (output) then
             if(knd.eq.kindd.and.ioprad.ne.0) write(20,260) x,cc,m
 260         format(1x,e23.14,e23.14,e23.14,i5)
             if(knd.eq.kindq.and.ioprad.ne.0) write(20,265) x,cc,m
-265         format(1x,e38.30,e38.30,e38.30,i5)
+265         format(1x,e39.30,e39.30,e39.30,i5)
 end if
               do 1510 li=1,lnum
               l=m+(li-1)

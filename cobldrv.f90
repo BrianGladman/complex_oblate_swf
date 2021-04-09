@@ -191,7 +191,7 @@
             if(knd == kindd) write(20, 10) x, c, m
 10          format(1x,e23.14,e23.14,e23.14,i5)
             if(knd == kindq) write(20,20) x, c, m
-20          format(1x,e38.30,e38.30,e38.30,i5)
+20          format(1x,e39.30,e39.30,e39.30,i5)
             
             do i = 1, lnum
                 l = m + i - 1
@@ -206,7 +206,7 @@
             if(knd == kindd) write(30, 40) c, m
 40          format(1x,'c = ',e23.14,e23.14,'; m = ',i5)
             if(knd == kindq) write(30, 50) c, m
-50          format(1x,'c = ',e38.30,e38.30,'; m = ',i5)
+50          format(1x,'c = ',e39.30,e39.30,'; m = ',i5)
                 
             do i = 1, lnum
                 l = m + i - 1
