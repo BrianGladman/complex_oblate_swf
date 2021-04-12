@@ -3234,7 +3234,7 @@ end if
                 end if
               if(iopang.eq.0) go to 1510
 !
-!  determine first kind oblate angular functionsf19.14
+!  determine first kind oblate angular functions
               if(l.eq.m) lims1=3*ndec+int(c)
               if(l.ne.m) lims1=jang+jang+20+c/25
               if(lims1.gt.maxp) lims1=maxp
