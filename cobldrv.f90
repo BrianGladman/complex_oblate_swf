@@ -4,6 +4,7 @@ program cobldrv
 
     real(knd)       x, ca, arg1, darg, step1, step2, step3, xneu
     complex(knd)    c
+    character       chr
 
     integer         i, im, j, mmin, minc, mnum, m, l, lnum, ioprad, iopang, &
                     iopnorm, ioparg, narg, kind, kindd, kindq
@@ -199,8 +200,9 @@ program cobldrv
 
             do i = 1, lnum
                 l = m + i - 1
-
-                write(20, 30) l, r1c(i), ir1e(i), r1dc(i), ir1de(i), r2c(i), ir2e(i), r2dc(i), ir2de(i), naccr(i), ' '
+                chr = 'w'
+                if (naccr(i) < 0) chr = 'e'
+                write(20, 30) l, r1c(i), ir1e(i), r1dc(i), ir1de(i), r2c(i), ir2e(i), r2dc(i), ir2de(i), abs(naccr(i)), chr
 30              format(1x,i5,2x,2(f17.14,1x,f17.14,i6,2x),/,8x,2(f17.14,1x,f17.14,i6,2x),i2,a)
             end do
         end if
@@ -223,8 +225,8 @@ program cobldrv
                     if(ioparg.eq.1.and.iopang.eq.1) write(30, 60) eta(j), s1c(i,j), is1e(i,j), naccs(i,j)
                     if(ioparg.eq.1.and.iopang.eq.2) write(30, 70) eta(j), s1c(i,j), is1e(i,j), s1dc(i,j), is1de(i,j), naccs(i,j), naccds(i,j)
 
-60                  format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,', ',i2)
-70                  format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
+60                  format(1x,f19.14,2x,f17.14,1x,f17.14,2x,i5,2x,', ',i2)
+70                  format(1x,f19.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
 
                 end do
             end do

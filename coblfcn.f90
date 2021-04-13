@@ -4,7 +4,6 @@ module param
     logical, parameter :: debug = .true.
     logical, parameter :: warn = .true.
     logical, parameter :: output = .true.
-    logical, parameter :: suffix = .false.
 end module param
 
 program coblfcn
@@ -649,14 +648,8 @@ end if
         integer neeb(jnenmax),neeb1(jnebmax),limpsv(jnenmax), &
                 limp1sv(jnebmax),limnsv(jnenmax),jelimsv(jnenmax), &
                 jelim1sv(jnebmax),limjsv(jnebmax)
-        character chr_w, chr_e
-        if (suffix) then
-            chr_e = 'e'
-            chr_w = 'w'
-        else
-            chr_e = ' '
-            chr_w = ' '
-        end if
+        character chr_w, chr_e, chr_s
+        chr_e = 'e'; chr_w = 'w'; chr_s = ' '
 !
         c=abs(cc)
         ten=10.0e0_knd
@@ -2982,7 +2975,7 @@ end if
                 if(ioprad.eq.1) then
 if (output) then
                 write(20,1340) l,r1c(li),ir1e(li), &
-                     r1dc(li),ir1de(li),naccr1, ' '
+                     r1dc(li),ir1de(li),naccr1, chr_s
 1340            format(1x,i5,2x,2(f17.14,1x,f17.14,i6,2x),i2, a)
 end if
                 go to 1400
@@ -3250,8 +3243,8 @@ if (debug) then
                 if(ioparg.eq.0.and.iopang.eq.2) write(50,1425) arg(jarg),naccs(jarg),naccds(jarg)
                 if(ioparg.eq.1.and.iopang.eq.1) write(50,1430) barg(jarg),naccs(jarg)
                 if(ioparg.eq.1.and.iopang.eq.2) write(50,1435) barg(jarg),naccs(jarg),naccds(jarg)
-1420            format(1x,'theta = ',f17.14,'   accuracy = ',i2, ' digits.')
-1425            format(1x,'theta = ',f17.14,'   s1 and s1d accuracy = ',i2,' and ',i2,' digits.')
+1420            format(1x,'theta = ',f19.14,'   accuracy = ',i2, ' digits.')
+1425            format(1x,'theta = ',f19.14,'   s1 and s1d accuracy = ',i2,' and ',i2,' digits.')
 1430            format(1x,'eta = ',f17.14,'   accuracy = ',i2, ' digits.')
 1435            format(1x,'eta = ',f17.14,'   s1 and s1d accuracy = ',i2,' and ',i2,' digits.')
 end if
@@ -3262,8 +3255,8 @@ if (output) then
                 if(ioparg.eq.1.and.iopang.eq.1) write(30,1440) barg(jarg),s1c(jarg),is1e(jarg),naccs(jarg)
                 if(ioparg.eq.1.and.iopang.eq.2) write(30,1450) barg(jarg),s1c(jarg),is1e(jarg),s1dc(jarg), &
                         is1de(jarg),naccs(jarg),naccds(jarg)
-1440            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,i2)
-1450            format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
+1440            format(1x,f19.14,2x,f17.14,1x,f17.14,2x,i5,2x,i2)
+1450            format(1x,f19.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
 end if
 if (debug) then
                 if(knd.eq.kindd.and.iopang.eq.1) write(50,1460) s1c(jarg),is1e(jarg)

@@ -702,14 +702,8 @@ end if
         integer neeb(jnenmax), neeb1(jnebmax), limpsv(jnenmax), &
                 limp1sv(jnebmax), limnsv(jnenmax), jelimsv(jnenmax), &
                 jelim1sv(jnebmax), limjsv(jnebmax)
-        character chr_w, chr_e
-        if (suffix) then
-            chr_e = 'e'
-            chr_w = 'w'
-        else
-            chr_e = ' '
-            chr_w = ' '
-        end if
+        character chr_w, chr_e, chr_s, chr_u
+        chr_e = 'e'; chr_w = 'w'; chr_s = ' '
 !
         c = abs(cc)
         ten = 10.0e0_knd
@@ -2106,6 +2100,7 @@ end if
 if (debug) then
                     write(40, 775) l, naccr
 end if
+                    chr_u = chr_e
 if (output) then
                     write(20, 1350) l, r1c(li), ir1e(li), r1dc(li), &
                                    ir1de(li), r2c(li), ir2e(li), r2dc(li), &
@@ -2184,6 +2179,7 @@ if (debug) then
                 if(naccr > 0) write(40, 775) l, naccr
 end if
                   if(naccr >= minacc) then
+                  chr_u = chr_e
 if (output) then
                   write(20, 1350) l, r1c(li), ir1e(li), r1dc(li), &
                                  ir1de(li), r2c(li), ir2e(li), r2dc(li), &
@@ -3026,6 +3022,7 @@ end if
               ir2de(li) = 0
 1330          continue
                 if(ioprad == 1) then
+                chr_u = chr_s
 if (output) then
                 write(20, 1340) l, r1c(li), ir1e(li), &
                      r1dc(li), ir1de(li), naccr1, ' '
@@ -3034,6 +3031,7 @@ end if
                 go to 1400
                 end if
                 if(x == 0.0e0_knd) then
+                chr_u = chr_e
 if (output) then
                 write(20, 1350) l, r1c(li), ir1e(li), r1dc(li), ir1de(li), &
                          r2c(li), ir2e(li), r2dc(li), ir2de(li), naccr, chr_e
@@ -3088,12 +3086,14 @@ end if
                      naccrp = naccrps
                   if(jjflagl == 1 .or. naccrp == min(naccrplp, naccr1p)) &
                       then
+                  chr_u = chr_e
 if (output) then
                   write(20, 1350) l - 1, r1c(li - 1), ir1e(li - 1), &
                       r1dc(li - 1), ir1de(li - 1), r2c(li - 1), ir2e(li - 1), &
                       r2dc(li - 1), ir2de(li - 1), naccrp, chr_e
 end if
                   else
+                  chr_u = chr_w
 if (output) then
                   write(20, 1380) l - 1, r1c(li - 1), ir1e(li - 1), &
                       r1dc(li - 1), ir1de(li - 1), r2c(li - 1), ir2e(li - 1), &
@@ -3115,12 +3115,14 @@ end if
                     naccint /= naccr .and. jflagl == 1) jjflagl = 1
                   if(jjflagl == 1 .or. naccr == min(naccrpl, naccr1)) &
                       then
+                  chr_u = chr_e
 if (output) then
                   write(20, 1350) l, r1c(li), ir1e(li), r1dc(li), ir1de(li), &
                                r2c(li), ir2e(li), r2dc(li), ir2de(li), &
                                naccr, chr_e
 end if
                   else
+                  chr_u = chr_w
 if (output) then
                   write(20, 1380) l, r1c(li), ir1e(li), r1dc(li), ir1de(li), &
                                r2c(li), ir2e(li), r2dc(li), ir2de(li), &
@@ -3139,11 +3141,13 @@ end if
                 if((jflagl == 1 .and. naccr == naccleg .and.  &
                     naccr /= naccint) .or. naccr == min(naccrpl, naccr1)) &
                      then
+                chr_u = chr_e
 if (output) then
                 write(20, 1350) l, r1c(li), ir1e(li), r1dc(li), ir1de(li), &
                          r2c(li), ir2e(li), r2dc(li), ir2de(li), naccr, chr_e
 end if
                 else
+                chr_u = chr_w
 if (output) then
                 write(20, 1380) l, r1c(li), ir1e(li), r1dc(li), ir1de(li), &
                          r2c(li), ir2e(li), r2dc(li), ir2de(li), naccr, chr_w
@@ -3159,6 +3163,7 @@ end if
 if (debug) then
                   write(40, 775) l - 1, naccrp
 end if
+                  chr_u = chr_e
 if (output) then
                   write(20, 1350) l - 1, r1c(li - 1), ir1e(li - 1), r1dc(li - 1), &
                            ir1de(li - 1), r2c(li - 1), ir2e(li - 1), r2dc(li - 1), &
@@ -3185,6 +3190,7 @@ end if
 if (debug) then
                   write(40, 1395) naccrp, l - 1
 end if
+                  chr_u = chr_w
 if (output) then
                   write(20, 1380) l - 1, r1c(li - 1), ir1e(li - 1), r1dc(li - 1), &
                            ir1de(li - 1), r2c(li - 1), ir2e(li - 1), r2dc(li - 1), &
@@ -3196,6 +3202,7 @@ end if
 if (debug) then
                   write(40, 775) l, naccr
 end if
+                  chr_u = chr_e
 if (output) then
                   write(20, 1350) l, r1c(li), ir1e(li), r1dc(li), ir1de(li), &
                                  r2c(li), ir2e(li), r2dc(li), ir2de(li), naccr, chr_e
@@ -3221,6 +3228,7 @@ end if
 if (debug) then
                   write(40, 1395) naccr, l
 end if
+                  chr_u = chr_w
 if (output) then
                   write(20, 1380) l, r1c(li), ir1e(li), r1dc(li), ir1de(li), &
                                  r2c(li), ir2e(li), r2dc(li), ir2de(li), &
@@ -3268,10 +3276,20 @@ if (warn) then
                  l,' x = ',x,' c = ',cc
 end if
               naccetamax = 0
+              if (chr_u == chr_e) then
+                  naccrp = -naccrp
+                  naccr = -naccr
+                  naccr1 = -naccr1
+              end if
               if(ioprad == 2 .and. li <= lipl .and. match(2) /= 0.0e0_knd .and. ix == 1) nar(li - 1) = naccrp
               if(ioprad == 2 .and. li <= lipl .and. match(2) /= 0.0e0_knd .and. ix == 1) nar(li) = naccr
               if(ioprad == 2 .and. (li > lipl .or. match(2) == 0)) nar(li) = naccr
               if(ioprad == 1) nar(li) = naccr1
+              if (chr_u == chr_e) then
+                  naccrp = -naccrp
+                  naccr = -naccr
+                  naccr1 = -naccr1
+              end if
               naccrp = naccr
               if(ioprad == 2) naccrplp = naccrpl
               if(ioprad == 2) naccneu0p = naccneu0
