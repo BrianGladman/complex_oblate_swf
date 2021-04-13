@@ -4,7 +4,7 @@ module param
     logical, parameter :: debug = .true.
     logical, parameter :: warn = .true.
     logical, parameter :: output = .true.
-    logical, parameter :: suffix = .false.    
+    logical, parameter :: suffix = .false.
 end module param
 
 program coblfcn
@@ -19,7 +19,7 @@ program coblfcn
 !  used in coblfcn is provided in the manuscript 'Calculation of oblate spheroidal
 !  wave functions with complex argument,' available at arXiv.org, identifier 2009.01618,
 !  August 2020.
-    
+
 !  purpose:     To calculate the first and second kind oblate radial
 !               functions r1 and r2 and their first derivatives with
 !               respect to the radial coordinate x for a range of values
@@ -49,7 +49,7 @@ program coblfcn
 !  repository. If this is not available, then create param as follows:
 !    module param
 !    integer, parameter :: knd = selected_real_kind(8)
-!    integer, parameter :: knd1 = selected_real_kind(8) 
+!    integer, parameter :: knd1 = selected_real_kind(8)
 !    logical, parameter :: debug = .true.
 !    logical, parameter :: warn = .true.
 !    logical, parameter :: output = .true.
@@ -623,7 +623,7 @@ end if
         real(knd) barg(maxt),etainp(maxt),pdnorm(maxt),pdnorma(maxt), &
                   pnorm(maxt),pnorma(maxt),pdtempe(maxt),pdtempo(maxt), &
                   ptempe(maxt),ptempo(maxt),xin(maxt),xlninp(maxt)
-        real(knd) arg(maxt)          
+        real(knd) arg(maxt)
         integer ipdnorm(maxt),ipdnorma(maxt),ipnorm(maxt), &
                 ipnorma(maxt),ipdtempe(maxt),ipdtempo(maxt), &
                 iptempe(maxt),iptempo(maxt),is1e(maxt),is1de(maxt), &
@@ -3248,7 +3248,7 @@ end if
 if (debug) then
                 if(ioparg.eq.0.and.iopang.eq.1) write(50,1420) arg(jarg),naccs(jarg)
                 if(ioparg.eq.0.and.iopang.eq.2) write(50,1425) arg(jarg),naccs(jarg),naccds(jarg)
-                if(ioparg.eq.1.and.iopang.eq.1) write(50,1430) barg(jarg),naccs(jarg)                      
+                if(ioparg.eq.1.and.iopang.eq.1) write(50,1430) barg(jarg),naccs(jarg)
                 if(ioparg.eq.1.and.iopang.eq.2) write(50,1435) barg(jarg),naccs(jarg),naccds(jarg)
 1420            format(1x,'theta = ',f17.14,'   accuracy = ',i2, ' digits.')
 1425            format(1x,'theta = ',f17.14,'   s1 and s1d accuracy = ',i2,' and ',i2,' digits.')
@@ -3690,7 +3690,7 @@ end if
             if(iacc.gt.ndec) iacc=ndec
             naccds(k)=min(ndec-2,naccre-1,itestm-1, &
                       ndec-1-jsubms)-iacc
-            if(naccds(k).lt.0) naccds(k)=0           
+            if(naccds(k).lt.0) naccds(k)=0
             end if
           if(abs(s1dc(k)).ge.1.0e0_knd) go to 370
           s1dc(k)=s1dc(k)*ten
@@ -4887,7 +4887,7 @@ end if
                      doldd,dc01,psum,pdsum,qndsum,qdsum,qnsum, &
                      qsum,r1c,r1dc,r2c,r2dc,spsum,spdsum,wronc, &
                      wronca,wroncb,wront,xden,xcoef,xrhs
-        complex(knd) anumt1,anumt2,anumt3,anumt4,dent1,dent2              
+        complex(knd) anumt1,anumt2,anumt3,anumt4,dent1,dent2
         complex(knd) drhor(maxdr),enr(maxd),enrneg(maxmp),fajo(lnum+1)
 
 !
@@ -5306,12 +5306,12 @@ end if
         if(nacccor.gt.naccrpl) nacccor=naccrpl
         nacclega=naccleg
         if(naccleg.gt.0) naccleg=min(naccleg+nacccor,ndec-jsub,naccr1)
-    nacclegb=naccleg    
+    nacclegb=naccleg
         nstest=max(nspsum,nspdsum)
         iflag2=0
         if(nsdrhor1.ne.0.and.naccleg.lt.minacc.and.nacclega.gt.1 &
            .and.x.le.0.01e0_knd) iflag2=1
-          if(iflag2.eq.1) then      
+          if(iflag2.eq.1) then
           anumt1=qdsum*r1c*ten**(ir1e+iqdsum)
           anumt2=qndsum*r1c*ten**(ir1e+iqdsum)
           anumt3=qsum*r1dc*ten**(ir1de+iqsum)
@@ -5331,7 +5331,7 @@ end if
           nacct3=ndec-(max(ifsub,nsqsum)+numc3)
           if(nacct3.gt.ndec) nacct3=ndec
           nacct4=ndec-(max(ifsub,nsqnsum)+numc4)
-          if(nacct4.gt.ndec) nacct4=ndec 
+          if(nacct4.gt.ndec) nacct4=ndec
           naccnum=min(nacct1,nacct2,nacct3,nacct4)
           if(naccnum.lt.0) naccnum=0
           dent1=r1c*pdsum*ten**(ir1e+iqdsum)
@@ -5346,7 +5346,7 @@ end if
             naccd2=ndec-nspsum
             naccd1=ndec-nspdsum-nratio
             end if
-          nacclest=min(naccnum,naccd1,naccd2,naccr1,itestm-2,ndec-nacccor)   
+          nacclest=min(naccnum,naccd1,naccd2,naccr1,itestm-2,ndec-nacccor)
           if(nacclest.lt.0) nacclest=0
             if(nacclest.gt.naccleg) then
             xrhs=wront-(qdsum+qndsum)*r1c*ten**(ir1e+iqdsum)+ &

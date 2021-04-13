@@ -1,8 +1,8 @@
 module complex_oblate_swf
   use param
-!      
+!
   contains
-  
+
     subroutine coblfcn(c, m, lnum, ioprad, x, iopang, iopnorm, narg, arg, &
                        r1c, ir1e, r1dc, ir1de, r2c, ir2e, r2dc, ir2de, naccr, &
                        s1c, is1e, s1dc, is1de, naccs, naccds)
@@ -47,7 +47,7 @@ module complex_oblate_swf
 !  repository. If this is not available, then create param as follows:
 !    module param
 !    integer, parameter :: knd = selected_real_kind(8)
-!    integer, parameter :: knd1 = selected_real_kind(8) 
+!    integer, parameter :: knd1 = selected_real_kind(8)
 !    logical, parameter :: debug = .true.
 !    logical, parameter :: warn = .true.
 !    logical, parameter :: output = .true.
@@ -190,7 +190,7 @@ module complex_oblate_swf
         complex(knd), intent (out) ::  r1c(lnum), r1dc(lnum), r2c(lnum), r2dc(lnum), &
                                        s1c(lnum, narg), s1dc(lnum, narg)
         integer, intent (out)      ::  ir1e(lnum), ir1de(lnum), ir2e(lnum), ir2de(lnum), &
-                                       is1e(lnum, narg), is1de(lnum, narg), & 
+                                       is1e(lnum, narg), is1de(lnum, narg), &
                                        naccr(lnum), naccs(lnum, narg), naccds(lnum, narg)
 
         real(knd) ca, step1, step2, step3, xneu
@@ -540,7 +540,7 @@ end if
 !               r1dc   : array of lnum values for the characteristic
 !                        of the derivative of the radial function of
 !                        the first kind)
-!               ir1de  : array of exponents corresponding to r1dc  
+!               ir1de  : array of exponents corresponding to r1dc
 !               r2c    : array of lnum values for the characteristic
 !                        of the radial function of the second kind
 !               ir2e   : array of exponents corresponding to r2c
@@ -3271,7 +3271,7 @@ end if
               if(ioprad == 2 .and. li <= lipl .and. match(2) /= 0.0e0_knd .and. ix == 1) nar(li - 1) = naccrp
               if(ioprad == 2 .and. li <= lipl .and. match(2) /= 0.0e0_knd .and. ix == 1) nar(li) = naccr
               if(ioprad == 2 .and. (li > lipl .or. match(2) == 0)) nar(li) = naccr
-              if(ioprad == 1) nar(li) = naccr1             
+              if(ioprad == 1) nar(li) = naccr1
               naccrp = naccr
               if(ioprad == 2) naccrplp = naccrpl
               if(ioprad == 2) naccneu0p = naccneu0
@@ -3739,7 +3739,7 @@ end if
             if(iacc > ndec) iacc = ndec
             naccds(k) = min(ndec - 2, naccre - 1, itestm - 1, &
                       ndec - 1 - jsubms) - iacc
-            if(naccds(k) < 0) naccds(k) = 0           
+            if(naccds(k) < 0) naccds(k) = 0
             end if
           if(abs(s1dc(k)) >= 1.0e0_knd) go to 370
           s1dc(k) = s1dc(k) * ten
@@ -4936,7 +4936,7 @@ end if
                      doldd, dc01, psum, pdsum, qndsum, qdsum, qnsum, &
                      qsum, r1c, r1dc, r2c, r2dc, spsum, spdsum, wronc, &
                      wronca, wroncb, wront, xden, xcoef, xrhs
-        complex(knd) anumt1, anumt2, anumt3, anumt4, dent1, dent2              
+        complex(knd) anumt1, anumt2, anumt3, anumt4, dent1, dent2
         complex(knd) drhor(maxdr), enr(maxd), enrneg(maxmp), fajo(lnum + 1)
 
 !
@@ -5355,12 +5355,12 @@ end if
         if(nacccor > naccrpl) nacccor = naccrpl
         nacclega = naccleg
         if(naccleg > 0) naccleg = min(naccleg + nacccor, ndec - jsub, naccr1)
-    nacclegb = naccleg    
+    nacclegb = naccleg
         nstest = max(nspsum, nspdsum)
         iflag2 = 0
         if(nsdrhor1 /= 0 .and. naccleg < minacc .and. nacclega > 1 &
             .and. x <= 0.01e0_knd) iflag2 = 1
-          if(iflag2 == 1) then      
+          if(iflag2 == 1) then
           anumt1 = qdsum * r1c * ten ** (ir1e + iqdsum)
           anumt2 = qndsum * r1c * ten ** (ir1e + iqdsum)
           anumt3 = qsum * r1dc * ten ** (ir1de + iqsum)
@@ -5380,7 +5380,7 @@ end if
           nacct3 = ndec - (max(ifsub, nsqsum) + numc3)
           if(nacct3 > ndec) nacct3 = ndec
           nacct4 = ndec - (max(ifsub, nsqnsum) + numc4)
-          if(nacct4 > ndec) nacct4 = ndec 
+          if(nacct4 > ndec) nacct4 = ndec
           naccnum = min(nacct1, nacct2, nacct3, nacct4)
           if(naccnum < 0) naccnum = 0
           dent1 = r1c * pdsum * ten ** (ir1e + iqdsum)
@@ -5395,7 +5395,7 @@ end if
             naccd2 = ndec - nspsum
             naccd1 = ndec - nspdsum - nratio
             end if
-          nacclest = min(naccnum, naccd1, naccd2, naccr1, itestm - 2, ndec - nacccor)   
+          nacclest = min(naccnum, naccd1, naccd2, naccr1, itestm - 2, ndec - nacccor)
           if(nacclest < 0) nacclest = 0
             if(nacclest > naccleg) then
             xrhs = wront - (qdsum + qndsum) * r1c * ten ** (ir1e + iqdsum)+ &

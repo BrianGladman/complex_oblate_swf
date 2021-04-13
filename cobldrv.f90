@@ -1,13 +1,13 @@
 program cobldrv
     use param
     use complex_oblate_swf
-    
+
     real(knd)       x, ca, arg1, darg, step1, step2, step3, xneu
     complex(knd)    c
 
     integer         i, im, j, mmin, minc, mnum, m, l, lnum, ioprad, iopang, &
                     iopnorm, ioparg, narg, kind, kindd, kindq
-        
+
     real (knd), dimension(:), allocatable ::        eta
     complex(knd), dimension(:), allocatable ::      r1c, r1dc, r2c, r2dc
     integer, dimension(:), allocatable ::           ir1e, ir1de, ir2e, ir2de, naccr
@@ -28,7 +28,7 @@ program cobldrv
         read(1,*) ioprad, iopang, iopnorm
         read(1,*) c, x
         if(iopang.ne.0) read(1,*) ioparg, arg1, darg, narg
-        
+
 
     allocate (eta(narg), r1c(lnum), r1dc(lnum), r2c(lnum), r2dc(lnum))
     allocate (ir1e(lnum), ir1de(lnum), ir2e(lnum), ir2de(lnum), naccr(lnum))
@@ -64,7 +64,7 @@ program cobldrv
     nstep3 = 3
     ngau = 100 * (2 + int(ca / 500.0e0_knd))
     xneu = 0.3e0_knd
-    
+
     if(ioprad == 2) then
         if(x < 0.2e0_knd) then
             step1 = x / 4.0e0_knd
@@ -139,7 +139,7 @@ program cobldrv
             if(knd.eq.kindd.and.aimag(c).gt.4.0e0_knd.and.x.lt. 0.00001e0_knd) ngau=2*ngau
             if(knd.eq.kindd.and.aimag(c).gt.4.0e0_knd.and.x.lt. 0.000001e0_knd) ngau=2*ngau
         end if
-    
+
         xneu = 0.3e0_knd
         if(ca > 100.0e0_knd) xneu = 0.04e0_knd
         if(ca > 600.0e0_knd) xneu = 0.03e0_knd
@@ -162,7 +162,7 @@ program cobldrv
             maxn = maxn + maxm
         end if
     end if
-    
+
     maxp = max(maxn, maxp, maxpdr)
     maxq = lnum + 3 * ndec + int(ca) + maxm + maxm + 4
     if(knd == kindd .and. aimag(c) < 10.0e0_knd .and. real(c) <= 60.0e0_knd &
@@ -178,7 +178,7 @@ program cobldrv
     if(iopang /= 0) maxt = narg
 
     if (iopang /= 0) then
-        do j = 1, narg  
+        do j = 1, narg
             eta(j) = arg1 + (j - 1) * darg
         end do
     end if
@@ -196,22 +196,22 @@ program cobldrv
 10          format(1x,e23.14,e23.14,e23.14,i5)
             if(knd == kindq) write(20,20) x, c, m
 20          format(1x,e39.30,e39.30,e39.30,i5)
-            
+
             do i = 1, lnum
                 l = m + i - 1
-                
+
                 write(20, 30) l, r1c(i), ir1e(i), r1dc(i), ir1de(i), r2c(i), ir2e(i), r2dc(i), ir2de(i), naccr(i), ' '
 30              format(1x,i5,2x,2(f17.14,1x,f17.14,i6,2x),/,8x,2(f17.14,1x,f17.14,i6,2x),i2,a)
             end do
         end if
-            
+
         if (iopang /= 0) then
-            
+
             if(knd == kindd) write(30, 40) c, m
 40          format(1x,'c = ',e23.14,e23.14,'; m = ',i5)
             if(knd == kindq) write(30, 50) c, m
 50          format(1x,'c = ',e39.30,e39.30,'; m = ',i5)
-                
+
             do i = 1, lnum
                 l = m + i - 1
 
@@ -219,10 +219,10 @@ program cobldrv
 
                 do j = 1, narg
                     arg = arg1 + (j - 1) * darg
-                    
+
                     if(ioparg.eq.1.and.iopang.eq.1) write(30, 60) eta(j), s1c(i,j), is1e(i,j), naccs(i,j)
                     if(ioparg.eq.1.and.iopang.eq.2) write(30, 70) eta(j), s1c(i,j), is1e(i,j), s1dc(i,j), is1de(i,j), naccs(i,j), naccds(i,j)
-                    
+
 60                  format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,', ',i2)
 70                  format(1x,f17.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
 
@@ -230,7 +230,7 @@ program cobldrv
             end do
         end if
     end do
-    
+
     deallocate (is1e, is1de, naccs, naccds)
     deallocate (s1c, s1dc)
     deallocate (ir1e, ir1de, ir2e, ir2de, naccr)
@@ -239,8 +239,7 @@ program cobldrv
     close(50)
     close(40)
     close(30)
-    close(20)    
+    close(20)
     close(1)
 
 end program cobldrv
-            
