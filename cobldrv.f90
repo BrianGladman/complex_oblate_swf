@@ -200,33 +200,39 @@ program cobldrv
 
             do i = 1, lnum
                 l = m + i - 1
-                chr = 'w'
-                if (naccr(i) < 0) chr = 'e'
-                write(20, 30) l, r1c(i), ir1e(i), r1dc(i), ir1de(i), r2c(i), ir2e(i), r2dc(i), ir2de(i), abs(naccr(i)), chr
-30              format(1x,i5,2x,2(f17.14,1x,f17.14,i6,2x),/,8x,2(f17.14,1x,f17.14,i6,2x),i2,a)
+                if (ioprad == 1) write(20, 30) l, r1c(i), ir1e(i), r1dc(i), ir1de(i), naccr1, ' '
+                
+                if (ioprad == 2) then
+                    chr = 'w'
+                    if (naccr(i) < 0) chr = 'e'
+                    write(20, 40) l, r1c(i), ir1e(i), r1dc(i), ir1de(i), r2c(i), ir2e(i), r2dc(i), ir2de(i), abs(naccr(i)), chr
+                end if
+
+30              format(1x, i5, 2x, 2(f17.14, 1x, f17.14, i6, 2x), i2, a)
+40              format(1x, i5, 2x, 2(f17.14, 1x, f17.14, i6, 2x), /, 8x, 2(f17.14, 1x, f17.14, i6, 2x), i2, a)
             end do
         end if
 
         if (iopang /= 0) then
 
-            if(knd == kindd) write(30, 40) c, m
-40          format(1x,'c = ',e23.14,e23.14,'; m = ',i5)
-            if(knd == kindq) write(30, 50) c, m
-50          format(1x,'c = ',e39.30,e39.30,'; m = ',i5)
+            if(knd == kindd) write(30, 50) c, m
+            if(knd == kindq) write(30, 60) c, m
+50          format(1x,'c = ',e23.14, e23.14,'; m = ',i5)
+60          format(1x,'c = ',e39.30, e39.30,'; m = ',i5)
 
             do i = 1, lnum
                 l = m + i - 1
 
-                write(30, "(1x,i6)") l
+                write(30, "(1x, i6)") l
 
                 do j = 1, narg
                     arg = arg1 + (j - 1) * darg
 
-                    if(ioparg.eq.1.and.iopang.eq.1) write(30, 60) eta(j), s1c(i,j), is1e(i,j), naccs(i,j)
-                    if(ioparg.eq.1.and.iopang.eq.2) write(30, 70) eta(j), s1c(i,j), is1e(i,j), s1dc(i,j), is1de(i,j), naccs(i,j), naccds(i,j)
+                    if(ioparg.eq.1.and.iopang.eq.1) write(30, 70) eta(j), s1c(i,j), is1e(i,j), naccs(i,j)
+                    if(ioparg.eq.1.and.iopang.eq.2) write(30, 80) eta(j), s1c(i,j), is1e(i,j), s1dc(i,j), is1de(i,j), naccs(i,j), naccds(i,j)
 
-60                  format(1x,f19.14,2x,f17.14,1x,f17.14,2x,i5,2x,', ',i2)
-70                  format(1x,f19.14,2x,f17.14,1x,f17.14,2x,i5,2x,f17.14,1x,f17.14,2x,i5,2x,i2,', ',i2)
+70                  format(1x, f19.14, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, ', ', i2)
+80                  format(1x, f19.14, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, f17.14, 1x, f17.14, 2x, i5, 2x, i2, ', ', i2)
 
                 end do
             end do
