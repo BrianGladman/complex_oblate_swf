@@ -2251,7 +2251,7 @@ end if
               naccint = -int(log10(abs((wronc - wront) / wront) + dec)- &
                          0.5e0_knd)
               if(naccint < 0) naccint = 0
-              if(naccint > ndec) naccint = ndec
+              if(naccint > ndec - 1) naccint = ndec - 1
               nacccor = -int(log10(abs((wronca - wroncb) / wronca) + dec))
               if(nacccor < 0) nacccor = 0
               if(nacccor > naccrpl) nacccor = naccrpl
@@ -2637,7 +2637,7 @@ end if
               wronc = wronca - wroncb
               naccneu0 = -int(log10(abs((wronc - wront) / wront) + dec))
               if(naccneu0 < 0) naccneu0 = 0
-              if(naccneu0 > ndec) naccneu0 = ndec
+              if(naccneu0 > ndec - 1) naccneu0 = ndec - 1
               naccneu0w = naccneu0
               nacccor = -int(log10(abs((wronca - wroncb) / wronca) + dec))
               if(nacccor < 0) nacccor = 0
@@ -5367,7 +5367,7 @@ end if
         wronc = wronca - wroncb
         naccleg = -int(log10(abs((wronc - wront) / wront) + dec))
         if(naccleg < 0) naccleg = 0
-        if(naccleg > ndec) naccleg = ndec
+        if(naccleg > ndec - 1) naccleg = ndec - 1
         nacccor = -int(log10(abs((wronca - wroncb) / wronca) + dec))
         if(nacccor < 0) nacccor = 0
         if(nacccor > naccrpl) nacccor = naccrpl
@@ -6346,7 +6346,7 @@ end if
         wronc = wronca - wroncb
         wront = (1.0e0_knd, 0.0e0_knd) / (cc * (x * x + 1.0e0_knd))
         nacceta = -int(log10(abs((wronc - wront) / wront) + dec))
-        if(nacceta > ndec) nacceta = ndec
+        if(nacceta > ndec - 1) nacceta = ndec - 1
         if(nacceta < 0) nacceta = 0
         naccetaw = nacceta
         nacccor = -int(log10(abs((wronca - wroncb) / wronca) + dec))
