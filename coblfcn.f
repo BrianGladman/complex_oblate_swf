@@ -1,7 +1,10 @@
-      module param
-      integer, parameter :: knd = selected_real_kind(8)
-      integer, parameter :: knd1 = selected_real_kind(8)
-      end module param
+module param
+    integer, parameter :: knd = selected_real_kind(16)
+    integer, parameter :: knd1 = selected_real_kind(16)
+    logical, parameter :: debug = .true.
+    logical, parameter :: warn = .true.
+    logical, parameter :: output = .true.
+end module param
 c      
        program coblfcn
 c      version 1.05
